@@ -2,7 +2,7 @@ set :stage,     :production
 set :rails_env, :production
 set :branch,    :master
 
-server '35.195.18.102', port: '22', roles: [:web, :app, :db], primary: true
+server '35.196.68.104', port: '22', roles: [:web, :app, :db], primary: true
 
 # Change these
 set :repo_url,        'git@github.com:BaoHP/RailsWithCapistrano.git'
