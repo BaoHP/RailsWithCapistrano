@@ -2,10 +2,10 @@ set :stage,     :production
 set :rails_env, :production
 set :branch,    :master
 
-server '', port: '22', roles: [:web, :app, :db], primary: true
+server '35.195.18.102', port: '22', roles: [:web, :app, :db], primary: true
 
 # Change these
-set :repo_url,        'git@example.com:username/app_name.git'
+set :repo_url,        'git@github.com:BaoHP/RailsWithCapistrano.git'
 set :application,     'test-deploy'
 set :user,            'deployer'
 set :puma_threads,    [4, 16]
