@@ -1,0 +1,109 @@
+defaults: &defaults
+  working_directory: ~/testCi
+  docker: 
+    - image: circleci/ruby:2.6.1-node-browsers-legacy
+      enviroment:
+        BUNDLE_PATH: vendor/bundle
+
+version: 2.0
+jobs:
+    bundle_dependencies:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/testCi
+
+      # Restore bundle cache
+      - restore_cache:
+          keys:
+          - testCi-{{ checksum "Gemfile.lock" }}
+      
+      - run:
+          name: Install Bundler
+          command: gem install bundler
+
+      - run:
+          name: Bundle Install
+          command: bundle check || bundle install --jobs=4 --retry=3 --path vendor/bundle
+
+      - save_cache:
+          key: testCi-{{ checksum "Gemfile.lock" }}
+          paths:
+            - ~/testCi/vendor/bundle
+
+  deploy_staging:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/testCi
+
+      # Restore bundle cache
+      - restore_cache:
+          keys:
+          - testCi-{{ checksum "Gemfile.lock" }}
+
+      - run:
+          name: Install Bundler
+          command: gem install bundler
+
+      - run:
+          name: Bundle Install
+          command: bundle check || bundle install --jobs=4 --retry=3 --path vendor/bundle
+
+      - save_cache:
+          key: testCi-{{ checksum "Gemfile.lock" }}
+          paths:
+            - ~/testCi/vendor/bundle
+
+      - run:
+          name: Deploy Master to Heroku
+          command: echo "deploy to heroku"
+
+  deploy_production:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/testCi
+
+      # Restore bundle cache
+      - restore_cache:
+          keys:
+          - testCi-{{ checksum "Gemfile.lock" }}
+
+      - run:
+          name: Install Bundler
+          command: gem install bundler
+
+      - run:
+          name: Bundle Install
+          command: bundle check || bundle install --jobs=4 --retry=3 --path vendor/bundle
+      
+      - save_cache:
+          key: testCi-{{ checksum "Gemfile.lock" }}
+          paths:
+            - ~/testCi/vendor/bundle
+
+      - run:
+          name: Deployment to server
+          command: echo "deploy to server"
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - bundle_dependencies
+      - deploy_staging:
+          requires:
+            - bundle_dependencies
+          filters:
+            branches:
+              only: staging
+      - deploy_production:
+          requires:
+            - bundle_dependencies
+          filters:
+            branches:
+              only: master
