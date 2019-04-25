@@ -88,7 +88,7 @@ jobs:
 
       - run:
           name: Deployment to server
-          command: echo "deploy to server"
+          command: bundle exec cap production deploy
 
 workflows:
   version: 2
